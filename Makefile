@@ -8,6 +8,8 @@
 # Use "make clone" to compile the output of the quine.
 # Use "make run_clone" to run the compiled output of the quine.
 #
+# Use "make test" to run an automated unit test
+#
 
 SHELL = /bin/sh
 CC=gcc -xc -Wall -Os -s -lc -
@@ -19,6 +21,11 @@ all: out/orig out/clone
 clean:
 	rm out/*
 	rmdir out
+
+.PHONY: test
+test: out/orig_out out/clone_out quine.c
+	diff quine.c out/orig_out
+	diff out/orig_out out/clone_out
 
 .PHONY: orig run run_orig clone run_clone
 orig: out/orig
@@ -35,6 +42,12 @@ out:
 out/orig: quine.c | out
 	cat $< | $(CC) -o $@
 
-out/clone: out/orig | out
+out/clone: out/orig
 	out/orig | $(CC) -o $@
+
+out/orig_out: out/orig
+	$< > $@
+
+out/clone_out: out/clone
+	$< > $@
 
